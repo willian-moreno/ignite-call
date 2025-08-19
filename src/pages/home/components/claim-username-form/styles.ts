@@ -14,7 +14,6 @@ export const Form = styled(Box, {
 
 export const Hint = styled('div', {
   marginTop: '$2',
-  minHeight: '$6',
 
   [`> ${Text}`]: {
     color: '$gray400',

@@ -57,7 +57,11 @@ export function ClaimUsernameForm() {
         </Button>
       </Form>
       <Hint>
-        {errors.username && <Text size="sm">{errors.username.message}</Text>}
+        <Text size="sm">
+          {errors.username
+            ? errors.username.message
+            : 'Digite o nome do usuário desejado.'}
+        </Text>
       </Hint>
     </>
   )

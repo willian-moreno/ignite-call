@@ -1,10 +1,41 @@
+import { TextInput } from '@/components/text-input'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
+import { useForm } from 'react-hook-form'
+import z from 'zod'
+import { Container, Form, FormError, Header } from './styles'
 
-import { TextInput } from '@/components/text-input'
-import { Container, Form, Header } from './styles'
+const registerFormSchema = z.object({
+  username: z
+    .string()
+    .min(3, { message: 'Mínimo de 3 caracteres requerido.' })
+    .regex(/^([a-z\\-_]+)$/i, {
+      message: 'Permitido somente letras, hífens e sublinhados.',
+    })
+    .transform((username) => username.toLocaleLowerCase()),
+  name: z.string().min(3, { message: 'Mínimo de 3 caracteres requerido.' }),
+})
+
+type RegisterFormData = z.infer<typeof registerFormSchema>
 
 export default function Register() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      username: '',
+      name: '',
+    },
+  })
+
+  function handleRegister(data: RegisterFormData) {
+    console.log(data)
+  }
+
   return (
     <Container>
       <Header>
@@ -20,21 +51,37 @@ export default function Register() {
         />
       </Header>
 
-      <Form as="form">
+      <Form
+        as="form"
+        onSubmit={handleSubmit(handleRegister)}
+      >
         <label>
           <Text size="sm">Nome de usuário</Text>
           <TextInput
             prefix="ignite.com/"
             placeholder="seu-usuário"
+            {...register('username')}
           />
+          {errors.username && (
+            <FormError size="sm">{errors.username.message}</FormError>
+          )}
         </label>
 
         <label>
           <Text size="sm">Nome completo</Text>
-          <TextInput placeholder="Seu nome" />
+          <TextInput
+            placeholder="Seu nome"
+            {...register('name')}
+          />
+          {errors.name && (
+            <FormError size="sm">{errors.name.message}</FormError>
+          )}
         </label>
 
-        <Button type="submit">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+        >
           Próximo passo
           <ArrowRight />
         </Button>

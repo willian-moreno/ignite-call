@@ -1,5 +1,6 @@
+import { TextInput } from '@/components/text-input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Text, TextInput } from '@ignite-ui/react'
+import { Button, Text } from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -43,9 +44,6 @@ export function ClaimUsernameForm() {
           size="sm"
           prefix="ignite.com/"
           placeholder="seu-usuário"
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-          crossOrigin={undefined}
           {...register('username')}
         />
         <Button

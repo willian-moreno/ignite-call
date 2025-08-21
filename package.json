@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.2.1",
     "@ignite-ui/react": "^2.2.4",
     "@prisma/client": "^6.14.0",
+    "axios": "^1.11.0",
     "next": "15.4.6",
     "phosphor-react": "^1.4.1",
     "react": "19.1.0",

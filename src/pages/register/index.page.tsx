@@ -1,4 +1,5 @@
 import { TextInput } from '@/components/text-input'
+import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
 import { useRouter } from 'next/router'
@@ -33,8 +34,15 @@ export default function Register() {
 
   const router = useRouter()
 
-  function handleRegister(data: RegisterFormData) {
-    console.log(data)
+  async function handleRegister(data: RegisterFormData) {
+    try {
+      await api.post('/users', {
+        name: data.name,
+        username: data.username,
+      })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   useEffect(() => {

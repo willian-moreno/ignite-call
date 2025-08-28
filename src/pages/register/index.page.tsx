@@ -2,6 +2,7 @@ import { TextInput } from '@/components/text-input'
 import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { useEffect } from 'react'
@@ -41,6 +42,15 @@ export default function Register() {
         username: data.username,
       })
     } catch (error) {
+      if (!axios.isAxiosError(error)) {
+        return
+      }
+
+      if (error.response?.data?.error) {
+        alert(error.response.data.error)
+        return
+      }
+
       console.error(error)
     }
   }

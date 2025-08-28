@@ -19,7 +19,7 @@ export default async function handler(
 
   if (alreadyExistsByUsername) {
     return res.status(409).json({
-      error: 'Nome de usuário indisponível.',
+      error: 'Username already taken.',
     })
   }
 

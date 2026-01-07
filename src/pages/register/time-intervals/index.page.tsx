@@ -9,7 +9,7 @@ import {
   TextInput,
 } from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import z from 'zod'
 import { Container, Header } from '../styles'
 import {
@@ -35,9 +35,10 @@ type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const {
-    register,
     control,
+    register,
     handleSubmit,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm<TimeIntervalsFormData>({
     resolver: zodResolver(timeIntervalsFormSchema),
@@ -58,6 +59,8 @@ export default function TimeIntervals() {
     name: 'intervals',
     control,
   })
+
+  const intervals = watch('intervals')
 
   const weekDays = getWeekDays()
 
@@ -87,7 +90,20 @@ export default function TimeIntervals() {
             return (
               <IntervalItem key={field.id}>
                 <IntervalDay>
-                  <Checkbox />
+                  <Controller
+                    name={`intervals.${index}.enabled`}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked === true)
+                          }}
+                        />
+                      )
+                    }}
+                  />
                   <Text>{weekDays[field.weekDay]}</Text>
                 </IntervalDay>
                 <IntervalInputs>
@@ -95,12 +111,20 @@ export default function TimeIntervals() {
                     type="time"
                     size="sm"
                     step={60}
+                    disabled={!intervals[index].enabled}
+                    crossOrigin={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                     {...register(`intervals.${index}.startTime`)}
                   />
                   <TextInput
                     type="time"
                     size="sm"
                     step={60}
+                    disabled={!intervals[index].enabled}
+                    crossOrigin={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                     {...register(`intervals.${index}.endTime`)}
                   />
                 </IntervalInputs>

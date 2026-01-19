@@ -1,5 +1,8 @@
+import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { getWeekDays } from '@/utils/get-week-days'
+import { addMonths, setDate, subMonths } from 'date-fns'
 import { CaretLeft, CaretRight } from 'phosphor-react'
+import { useState } from 'react'
 import {
   CalendarActions,
   CalendarBody,
@@ -10,20 +13,46 @@ import {
 } from './styles'
 
 export function Calendar() {
+  const [currentDate, setCurrentDate] = useState(() => {
+    return setDate(new Date(), 1)
+  })
+
+  const currentMonth = formatInLocaleTimeZone(currentDate, 'MMMM')
+
+  const currentYear = formatInLocaleTimeZone(currentDate, 'yyyy')
+
   const shortWeekDays = getWeekDays({ short: true })
+
+  function handlePreviousMonth() {
+    setCurrentDate((state) => {
+      return subMonths(state, 1)
+    })
+  }
+
+  function handleNextMonth() {
+    setCurrentDate((state) => {
+      return addMonths(state, 1)
+    })
+  }
 
   return (
     <CalendarContainer>
       <CalendarHeader>
         <CalendarTitle>
-          Janeiro <span>2026</span>
+          {currentMonth} <span>{currentYear}</span>
         </CalendarTitle>
 
         <CalendarActions>
-          <button>
+          <button
+            title="Previous month"
+            onClick={handlePreviousMonth}
+          >
             <CaretLeft />
           </button>
-          <button>
+          <button
+            title="Next month"
+            onClick={handleNextMonth}
+          >
             <CaretRight />
           </button>
         </CalendarActions>

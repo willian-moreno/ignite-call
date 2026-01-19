@@ -1,8 +1,17 @@
 import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { getWeekDays } from '@/utils/get-week-days'
-import { addMonths, setDate, subMonths } from 'date-fns'
+import {
+  addDays,
+  addMonths,
+  getDate,
+  getDay,
+  getDaysInMonth,
+  setDate,
+  subDays,
+  subMonths,
+} from 'date-fns'
 import { CaretLeft, CaretRight } from 'phosphor-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   CalendarActions,
   CalendarBody,
@@ -20,6 +29,53 @@ export function Calendar() {
   const currentMonth = formatInLocaleTimeZone(currentDate, 'MMMM')
 
   const currentYear = formatInLocaleTimeZone(currentDate, 'yyyy')
+
+  const calendarWeeks = useMemo(() => {
+    const daysInMonthArray = Array.from({
+      length: getDaysInMonth(currentDate),
+    }).map((_, i) => {
+      return { day: setDate(currentDate, i + 1), disabled: false }
+    })
+
+    const firstMonthWeekDay = getDay(currentDate)
+
+    const previousMonthFillArray = Array.from({
+      length: firstMonthWeekDay,
+    })
+      .map((_, i) => {
+        return { day: subDays(currentDate, i + 1), disabled: true }
+      })
+      .reverse()
+
+    const lastDayInMonth = daysInMonthArray[daysInMonthArray.length - 1]
+
+    const lastMonthWeekDay = getDay(lastDayInMonth.day)
+
+    const nextMonthFillArray = Array.from({
+      length: 6 - lastMonthWeekDay,
+    }).map((_, i) => {
+      return { day: addDays(lastDayInMonth.day, i + 1), disabled: true }
+    })
+
+    const calendarIndividualDays = [
+      ...previousMonthFillArray,
+      ...daysInMonthArray,
+      ...nextMonthFillArray,
+    ]
+
+    const weeks = []
+    const maxWeekDays = 7
+
+    for (
+      let index = 0;
+      index < calendarIndividualDays.length;
+      index += maxWeekDays
+    ) {
+      weeks.push(calendarIndividualDays.slice(index, index + maxWeekDays))
+    }
+
+    return weeks
+  }, [currentDate])
 
   const shortWeekDays = getWeekDays({ short: true })
 
@@ -67,21 +123,15 @@ export function Calendar() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <CalendarDay>1</CalendarDay>
-            </td>
-            <td>
-              <CalendarDay>2</CalendarDay>
-            </td>
-            <td>
-              <CalendarDay>3</CalendarDay>
-            </td>
-          </tr>
+          {calendarWeeks.map((week, i) => (
+            <tr key={i}>
+              {week.map(({ day, disabled }) => (
+                <td key={day.toString()}>
+                  <CalendarDay disabled={disabled}>{getDate(day)}</CalendarDay>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </CalendarBody>
     </CalendarContainer>

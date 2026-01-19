@@ -14,11 +14,15 @@ const registerFormSchema = z.object({
   username: z
     .string()
     .min(3, { message: 'Mínimo de 3 caracteres requerido.' })
+    .max(50)
     .regex(/^([a-z\\-_]+)$/i, {
       message: 'Permitido somente letras, hífens e sublinhados.',
     })
     .transform((username) => username.toLocaleLowerCase()),
-  name: z.string().min(3, { message: 'Mínimo de 3 caracteres requerido.' }),
+  name: z
+    .string()
+    .min(3, { message: 'Mínimo de 3 caracteres requerido.' })
+    .max(150),
 })
 
 type RegisterFormData = z.infer<typeof registerFormSchema>

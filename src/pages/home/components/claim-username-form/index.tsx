@@ -11,6 +11,7 @@ const claimUsernameFormSchema = z.object({
   username: z
     .string()
     .min(3, { message: 'Mínimo de 3 caracteres requerido.' })
+    .max(50)
     .regex(/^([a-z\\-_]+)$/i, {
       message: 'Permitido somente letras, hífens e sublinhados.',
     })

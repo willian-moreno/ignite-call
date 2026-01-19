@@ -1,15 +1,9 @@
+import { TextInput } from '@/components/text-input'
 import { api } from '@/lib/axios'
 import { convertTimeStringToMinutes } from '@/utils/convert-time-string-to-minutes'
 import { getWeekDays } from '@/utils/get-week-days'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Button,
-  Checkbox,
-  Heading,
-  MultiStep,
-  Text,
-  TextInput,
-} from '@ignite-ui/react'
+import { Button, Checkbox, Heading, MultiStep, Text } from '@ignite-ui/react'
 import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -153,9 +147,6 @@ export default function TimeIntervals() {
                     size="sm"
                     step={60}
                     disabled={!intervals[index].enabled}
-                    crossOrigin={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
                     {...register(`intervals.${index}.startTime`)}
                   />
                   <TextInput
@@ -163,9 +154,6 @@ export default function TimeIntervals() {
                     size="sm"
                     step={60}
                     disabled={!intervals[index].enabled}
-                    crossOrigin={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
                     {...register(`intervals.${index}.endTime`)}
                   />
                 </IntervalInputs>

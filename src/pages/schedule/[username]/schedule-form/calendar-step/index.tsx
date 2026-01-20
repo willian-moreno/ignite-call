@@ -1,4 +1,6 @@
 import { Calendar } from '@/components/calendar'
+import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
+import { useState } from 'react'
 import {
   Container,
   TimePicker,
@@ -8,16 +10,29 @@ import {
 } from './styles'
 
 export function CalendarStep() {
-  const isDateSelected = false
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  const isDateSelected = selectedDate instanceof Date
+
+  const calendarWeek = isDateSelected
+    ? formatInLocaleTimeZone(selectedDate, 'EEEE')
+    : null
+
+  const calendarDateAndMonth = isDateSelected
+    ? formatInLocaleTimeZone(selectedDate, "dd 'de' MMMM")
+    : null
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
-      <Calendar />
+      <Calendar
+        selectedDate={selectedDate}
+        onDateSelected={setSelectedDate}
+      />
 
       {isDateSelected && (
         <TimePicker>
           <TimePickerHeader>
-            terça-feira <span>20 de setembro</span>
+            {calendarWeek} <span>{calendarDateAndMonth}</span>
           </TimePickerHeader>
 
           <TimePickerList>

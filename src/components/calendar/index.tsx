@@ -3,9 +3,11 @@ import { getWeekDays } from '@/utils/get-week-days'
 import {
   addDays,
   addMonths,
+  endOfDay,
   getDate,
   getDay,
   getDaysInMonth,
+  isBefore,
   setDate,
   subDays,
   subMonths,
@@ -21,9 +23,15 @@ import {
   CalendarTitle,
 } from './styles'
 
-export function Calendar() {
+interface CalendarProps {
+  selectedDate: Date | null
+  onDateSelected: (date: Date) => void
+}
+
+export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
-    return setDate(new Date(), 1)
+    const date = selectedDate instanceof Date ? selectedDate : new Date()
+    return setDate(date, 1)
   })
 
   const currentMonth = formatInLocaleTimeZone(currentDate, 'MMMM')
@@ -38,7 +46,12 @@ export function Calendar() {
       const date = getDate(day)
       const key = day.toString()
 
-      return { key, day, date, disabled: false }
+      return {
+        key,
+        day,
+        date,
+        disabled: isBefore(endOfDay(day), new Date()),
+      }
     })
 
     const firstMonthWeekDay = getDay(currentDate)
@@ -51,7 +64,12 @@ export function Calendar() {
         const date = getDate(day)
         const key = day.toString()
 
-        return { key, day, date, disabled: true }
+        return {
+          key,
+          day,
+          date,
+          disabled: true,
+        }
       })
       .reverse()
 
@@ -66,7 +84,12 @@ export function Calendar() {
       const date = getDate(day)
       const key = day.toString()
 
-      return { key, day, date, disabled: true }
+      return {
+        key,
+        day,
+        date,
+        disabled: true,
+      }
     })
 
     const calendarDays = [
@@ -135,9 +158,14 @@ export function Calendar() {
         <tbody>
           {calendarMonth.map(({ week, days }) => (
             <tr key={week}>
-              {days.map(({ key, date, disabled }) => (
+              {days.map(({ key, day, date, disabled }) => (
                 <td key={key}>
-                  <CalendarDay disabled={disabled}>{date}</CalendarDay>
+                  <CalendarDay
+                    disabled={disabled}
+                    onClick={() => onDateSelected(day)}
+                  >
+                    {date}
+                  </CalendarDay>
                 </td>
               ))}
             </tr>

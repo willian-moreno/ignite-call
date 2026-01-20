@@ -30,6 +30,7 @@ const eslintConfig = [
           singleAttributePerLine: true,
         },
       ],
+      camelcase: 'off',
     },
   },
 ]

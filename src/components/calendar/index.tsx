@@ -38,7 +38,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
 
   const currentYear = formatInLocaleTimeZone(currentDate, 'yyyy')
 
-  const calendarMonth = useMemo(() => {
+  const calendar = useMemo(() => {
     const daysInMonth = Array.from({
       length: getDaysInMonth(currentDate),
     }).map((_, i) => {
@@ -156,7 +156,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
           </tr>
         </thead>
         <tbody>
-          {calendarMonth.map(({ week, days }) => (
+          {calendar.map(({ week, days }) => (
             <tr key={week}>
               {days.map(({ key, day, date, disabled }) => (
                 <td key={key}>

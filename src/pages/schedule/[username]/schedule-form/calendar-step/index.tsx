@@ -14,11 +14,11 @@ export function CalendarStep() {
 
   const isDateSelected = selectedDate instanceof Date
 
-  const calendarWeek = isDateSelected
+  const weekDayOfSelectedDate = isDateSelected
     ? formatInLocaleTimeZone(selectedDate, 'EEEE')
     : null
 
-  const calendarDateAndMonth = isDateSelected
+  const dateAndMonthOfSelectedDate = isDateSelected
     ? formatInLocaleTimeZone(selectedDate, "dd 'de' MMMM")
     : null
 
@@ -32,7 +32,7 @@ export function CalendarStep() {
       {isDateSelected && (
         <TimePicker>
           <TimePickerHeader>
-            {calendarWeek} <span>{calendarDateAndMonth}</span>
+            {weekDayOfSelectedDate} <span>{dateAndMonthOfSelectedDate}</span>
           </TimePickerHeader>
 
           <TimePickerList>

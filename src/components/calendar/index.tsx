@@ -34,7 +34,11 @@ export function Calendar() {
     const daysInMonth = Array.from({
       length: getDaysInMonth(currentDate),
     }).map((_, i) => {
-      return { day: setDate(currentDate, i + 1), disabled: false }
+      const day = setDate(currentDate, i + 1)
+      const date = getDate(day)
+      const key = day.toString()
+
+      return { key, day, date, disabled: false }
     })
 
     const firstMonthWeekDay = getDay(currentDate)
@@ -43,7 +47,11 @@ export function Calendar() {
       length: firstMonthWeekDay,
     })
       .map((_, i) => {
-        return { day: subDays(currentDate, i + 1), disabled: true }
+        const day = subDays(currentDate, i + 1)
+        const date = getDate(day)
+        const key = day.toString()
+
+        return { key, day, date, disabled: true }
       })
       .reverse()
 
@@ -54,7 +62,11 @@ export function Calendar() {
     const nextMonthFill = Array.from({
       length: 6 - lastMonthWeekDay,
     }).map((_, i) => {
-      return { day: addDays(lastDayInMonth.day, i + 1), disabled: true }
+      const day = addDays(lastDayInMonth.day, i + 1)
+      const date = getDate(day)
+      const key = day.toString()
+
+      return { key, day, date, disabled: true }
     })
 
     const calendarDays = [
@@ -123,9 +135,9 @@ export function Calendar() {
         <tbody>
           {calendarMonth.map(({ week, days }) => (
             <tr key={week}>
-              {days.map(({ day, disabled }) => (
-                <td key={day.toString()}>
-                  <CalendarDay disabled={disabled}>{getDate(day)}</CalendarDay>
+              {days.map(({ key, date, disabled }) => (
+                <td key={key}>
+                  <CalendarDay disabled={disabled}>{date}</CalendarDay>
                 </td>
               ))}
             </tr>

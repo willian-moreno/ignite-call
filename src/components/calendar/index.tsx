@@ -30,8 +30,8 @@ export function Calendar() {
 
   const currentYear = formatInLocaleTimeZone(currentDate, 'yyyy')
 
-  const calendarWeeks = useMemo(() => {
-    const daysInMonthArray = Array.from({
+  const calendarMonth = useMemo(() => {
+    const daysInMonth = Array.from({
       length: getDaysInMonth(currentDate),
     }).map((_, i) => {
       return { day: setDate(currentDate, i + 1), disabled: false }
@@ -39,7 +39,7 @@ export function Calendar() {
 
     const firstMonthWeekDay = getDay(currentDate)
 
-    const previousMonthFillArray = Array.from({
+    const previousMonthFill = Array.from({
       length: firstMonthWeekDay,
     })
       .map((_, i) => {
@@ -47,34 +47,29 @@ export function Calendar() {
       })
       .reverse()
 
-    const lastDayInMonth = daysInMonthArray[daysInMonthArray.length - 1]
+    const lastDayInMonth = daysInMonth[daysInMonth.length - 1]
 
     const lastMonthWeekDay = getDay(lastDayInMonth.day)
 
-    const nextMonthFillArray = Array.from({
+    const nextMonthFill = Array.from({
       length: 6 - lastMonthWeekDay,
     }).map((_, i) => {
       return { day: addDays(lastDayInMonth.day, i + 1), disabled: true }
     })
 
-    const calendarIndividualDays = [
-      ...previousMonthFillArray,
-      ...daysInMonthArray,
-      ...nextMonthFillArray,
+    const calendarDays = [
+      ...previousMonthFill,
+      ...daysInMonth,
+      ...nextMonthFill,
     ]
 
-    const weeks = []
-    const maxWeekDays = 7
+    const calendarWeeks = []
 
-    for (
-      let index = 0;
-      index < calendarIndividualDays.length;
-      index += maxWeekDays
-    ) {
-      weeks.push(calendarIndividualDays.slice(index, index + maxWeekDays))
+    for (let index = 0; index < calendarDays.length; index += 7) {
+      calendarWeeks.push(calendarDays.slice(index, index + 7))
     }
 
-    return weeks
+    return calendarWeeks
   }, [currentDate])
 
   const shortWeekDays = getWeekDays({ short: true })
@@ -123,7 +118,7 @@ export function Calendar() {
           </tr>
         </thead>
         <tbody>
-          {calendarWeeks.map((week, i) => (
+          {calendarMonth.map((week, i) => (
             <tr key={i}>
               {week.map(({ day, disabled }) => (
                 <td key={day.toString()}>

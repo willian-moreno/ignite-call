@@ -66,7 +66,10 @@ export function Calendar() {
     const calendarWeeks = []
 
     for (let index = 0; index < calendarDays.length; index += 7) {
-      calendarWeeks.push(calendarDays.slice(index, index + 7))
+      calendarWeeks.push({
+        week: index / 7 + 1,
+        days: calendarDays.slice(index, index + 7),
+      })
     }
 
     return calendarWeeks
@@ -118,9 +121,9 @@ export function Calendar() {
           </tr>
         </thead>
         <tbody>
-          {calendarMonth.map((week, i) => (
-            <tr key={i}>
-              {week.map(({ day, disabled }) => (
+          {calendarMonth.map(({ week, days }) => (
+            <tr key={week}>
+              {days.map(({ day, disabled }) => (
                 <td key={day.toString()}>
                   <CalendarDay disabled={disabled}>{getDate(day)}</CalendarDay>
                 </td>

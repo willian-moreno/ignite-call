@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { endOfDay, getDay, isBefore } from 'date-fns'
+import { endOfDay, getDay, isBefore, setHours } from 'date-fns'
 import { toDate } from 'date-fns-tz'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -57,5 +57,24 @@ export default async function handler(
     },
   )
 
-  return res.json({ possibleTimes })
+  const blockedTimes = await prisma.scheduling.findMany({
+    select: {
+      date: true,
+    },
+    where: {
+      user_id: user.id,
+      date: {
+        gte: setHours(referenceDate, startHour),
+        lte: setHours(referenceDate, endHour),
+      },
+    },
+  })
+
+  const availableTimes = possibleTimes.filter((time) => {
+    return !blockedTimes.some(
+      (blockedTime) => blockedTime.date.getHours() === time,
+    )
+  })
+
+  return res.json({ possibleTimes, availableTimes })
 }

@@ -1,5 +1,7 @@
+import { api } from '@/lib/axios'
 import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { getWeekDays } from '@/utils/get-week-days'
+import { useQuery } from '@tanstack/react-query'
 import {
   addDays,
   addMonths,
@@ -12,6 +14,7 @@ import {
   subDays,
   subMonths,
 } from 'date-fns'
+import { useRouter } from 'next/router'
 import { CaretLeft, CaretRight } from 'phosphor-react'
 import { useMemo, useState } from 'react'
 import {
@@ -28,15 +31,44 @@ interface CalendarProps {
   onDateSelected: (date: Date) => void
 }
 
+interface BlockedDates {
+  blockedWeekDays: number[]
+}
+
 export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     const date = selectedDate instanceof Date ? selectedDate : new Date()
     return setDate(date, 1)
   })
 
+  const router = useRouter()
+
   const currentMonth = formatInLocaleTimeZone(currentDate, 'MMMM')
 
   const currentYear = formatInLocaleTimeZone(currentDate, 'yyyy')
+
+  const username = String(router.query.username)
+
+  const { data: blockedDates } = useQuery<BlockedDates>({
+    queryKey: [
+      'blocked-dates',
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+    ],
+    queryFn: async () => {
+      const response = await api.get<BlockedDates>(
+        `/users/${username}/blocked-dates`,
+        {
+          params: {
+            year: currentDate.getFullYear(),
+            month: currentDate.getMonth(),
+          },
+        },
+      )
+
+      return response.data
+    },
+  })
 
   const calendar = useMemo(() => {
     const daysInMonth = Array.from({
@@ -50,7 +82,9 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
         key,
         day,
         date,
-        disabled: isBefore(endOfDay(day), new Date()),
+        disabled:
+          isBefore(endOfDay(day), new Date()) ||
+          blockedDates?.blockedWeekDays.includes(getDay(day)),
       }
     })
 
@@ -108,7 +142,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
     }
 
     return calendarWeeks
-  }, [currentDate])
+  }, [currentDate, blockedDates])
 
   const shortWeekDays = getWeekDays({ short: true })
 

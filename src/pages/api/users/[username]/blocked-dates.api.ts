@@ -41,5 +41,12 @@ export default async function handler(
     )
   })
 
-  return res.json({ blockedWeekDays })
+  const blockedDatesRaw = await prisma.$queryRaw`
+    SELECT *
+      FROM schedulings scd
+     WHERE scd.user_id = ${user.id}
+       AND DATE_FORMAT(scd.date, "%Y-%m") = ${`${year}-${month}`}
+  `
+
+  return res.json({ blockedWeekDays, blockedDatesRaw })
 }

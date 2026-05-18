@@ -1,8 +1,9 @@
 import { Calendar } from '@/components/calendar'
 import { api } from '@/lib/axios'
 import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Container,
   TimePicker,
@@ -19,8 +20,6 @@ interface Availability {
 export function CalendarStep() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
-  const [availability, setAvailability] = useState<Availability | null>(null)
-
   const router = useRouter()
 
   const isDateSelected = selectedDate instanceof Date
@@ -35,30 +34,26 @@ export function CalendarStep() {
     ? formatInLocaleTimeZone(selectedDate, "dd 'de' MMMM")
     : null
 
-  useEffect(() => {
-    if (!selectedDate) {
-      return
-    }
+  const selectedDateWithoutTime = selectedDate
+    ? formatInLocaleTimeZone(selectedDate, 'yyyy-MM-dd')
+    : null
 
-    ;(async () => {
-      try {
-        const response = await api.get<Availability>(
-          `/users/${username}/availability`,
-          {
-            params: {
-              date: formatInLocaleTimeZone(selectedDate, 'yyyy-MM-dd'),
-            },
+  const { data: availability } = useQuery<Availability>({
+    queryKey: ['availability', selectedDateWithoutTime],
+    queryFn: async () => {
+      const response = await api.get<Availability>(
+        `/users/${username}/availability`,
+        {
+          params: {
+            date: selectedDateWithoutTime,
           },
-        )
+        },
+      )
 
-        setAvailability(response.data)
-
-        console.log(response.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  }, [selectedDate, username])
+      return response.data
+    },
+    enabled: !!selectedDate,
+  })
 
   return (
     <Container isTimePickerOpen={isDateSelected}>

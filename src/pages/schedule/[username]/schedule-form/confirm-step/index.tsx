@@ -1,6 +1,8 @@
 import { TextInput } from '@/components/text-input'
+import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Text, TextArea } from '@ignite-ui/react'
+import { getHours } from 'date-fns'
 import { CalendarBlank, Clock } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -17,7 +19,12 @@ const confirmFormSchema = z.object({
 
 type ConfirmFormData = z.infer<typeof confirmFormSchema>
 
-export function ConfirmStep() {
+interface ConfirmStepProps {
+  schedulingDate: Date
+  onCancel: () => void
+}
+
+export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
   const {
     register,
     handleSubmit,
@@ -26,8 +33,19 @@ export function ConfirmStep() {
     resolver: zodResolver(confirmFormSchema),
   })
 
+  const formattedSchedulingDate = formatInLocaleTimeZone(
+    schedulingDate,
+    "dd 'de' MMMM 'de' yyyy",
+  )
+
+  const schedulingDateHour = getHours(schedulingDate)
+
   function handleConfirmScheduling(data: ConfirmFormData) {
     console.log(data)
+  }
+
+  function handleCancel() {
+    onCancel()
   }
 
   return (
@@ -38,11 +56,11 @@ export function ConfirmStep() {
       <FormHeader>
         <Text>
           <CalendarBlank />
-          22 de Setembro de 2022
+          {formattedSchedulingDate}
         </Text>
         <Text>
           <Clock />
-          18:00h
+          {String(schedulingDateHour).padStart(2, '0')}:00h
         </Text>
       </FormHeader>
 
@@ -76,6 +94,7 @@ export function ConfirmStep() {
         <Button
           type="button"
           variant="tertiary"
+          onClick={handleCancel}
         >
           Cancelar
         </Button>

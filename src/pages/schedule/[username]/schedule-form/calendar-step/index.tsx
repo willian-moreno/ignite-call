@@ -2,6 +2,7 @@ import { Calendar } from '@/components/calendar'
 import { api } from '@/lib/axios'
 import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { useQuery } from '@tanstack/react-query'
+import { setHours, startOfHour } from 'date-fns'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import {
@@ -17,7 +18,11 @@ interface Availability {
   availableTimes: number[]
 }
 
-export function CalendarStep() {
+interface CalendarStepProps {
+  onSelectDateTime: (date: Date | null) => void
+}
+
+export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   const router = useRouter()
@@ -55,6 +60,18 @@ export function CalendarStep() {
     enabled: !!selectedDate,
   })
 
+  function handleSelectTime(hour: number) {
+    if (!selectedDate) {
+      onSelectDateTime(null)
+
+      return
+    }
+
+    const dateWithTime = startOfHour(setHours(selectedDate, hour))
+
+    onSelectDateTime(dateWithTime)
+  }
+
   return (
     <Container isTimePickerOpen={isDateSelected}>
       <Calendar
@@ -74,6 +91,7 @@ export function CalendarStep() {
                 <TimePickerItem
                   key={hour}
                   disabled={!availability.availableTimes.includes(hour)}
+                  onClick={() => handleSelectTime(hour)}
                 >
                   {String(hour).padStart(2, '0')}:00h
                 </TimePickerItem>

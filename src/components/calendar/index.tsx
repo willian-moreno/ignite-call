@@ -33,6 +33,7 @@ interface CalendarProps {
 
 interface BlockedDates {
   blockedWeekDays: number[]
+  blockedDates: number[]
 }
 
 export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
@@ -61,7 +62,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
         {
           params: {
             year: currentDate.getFullYear(),
-            month: currentDate.getMonth(),
+            month: currentDate.getMonth() + 1,
           },
         },
       )
@@ -88,7 +89,8 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
         date,
         disabled:
           isBefore(endOfDay(day), new Date()) ||
-          blockedDates.blockedWeekDays.includes(getDay(day)),
+          blockedDates.blockedWeekDays.includes(getDay(day)) ||
+          blockedDates.blockedDates.includes(getDate(day)),
       }
     })
 

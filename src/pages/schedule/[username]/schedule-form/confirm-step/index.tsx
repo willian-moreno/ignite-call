@@ -1,8 +1,10 @@
 import { TextInput } from '@/components/text-input'
+import { api } from '@/lib/axios'
 import { formatInLocaleTimeZone } from '@/utils/format-in-locale-time-zone'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Text, TextArea } from '@ignite-ui/react'
 import { getHours } from 'date-fns'
+import { useRouter } from 'next/router'
 import { CalendarBlank, Clock } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -22,9 +24,14 @@ type ConfirmFormData = z.infer<typeof confirmFormSchema>
 interface ConfirmStepProps {
   schedulingDate: Date
   onCancel: () => void
+  onSuccessConfirmation: () => void
 }
 
-export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
+export function ConfirmStep({
+  schedulingDate,
+  onCancel,
+  onSuccessConfirmation,
+}: ConfirmStepProps) {
   const {
     register,
     handleSubmit,
@@ -33,6 +40,10 @@ export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
     resolver: zodResolver(confirmFormSchema),
   })
 
+  const router = useRouter()
+
+  const username = String(router.query.username)
+
   const formattedSchedulingDate = formatInLocaleTimeZone(
     schedulingDate,
     "dd 'de' MMMM 'de' yyyy",
@@ -40,8 +51,17 @@ export function ConfirmStep({ schedulingDate, onCancel }: ConfirmStepProps) {
 
   const schedulingDateHour = getHours(schedulingDate)
 
-  function handleConfirmScheduling(data: ConfirmFormData) {
-    console.log(data)
+  async function handleConfirmScheduling(data: ConfirmFormData) {
+    const { name, email, observations } = data
+
+    await api.post(`/users/${username}/schedule`, {
+      name,
+      email,
+      observations,
+      date: schedulingDate,
+    })
+
+    onSuccessConfirmation()
   }
 
   function handleCancel() {

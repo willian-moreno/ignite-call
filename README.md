@@ -22,7 +22,7 @@
 
 <h3>📌 Sobre</h3> 
 
-A Ignite Call é um calendário no qual é possível conectar a conta Google, configurar dias e horários específicos para que outras pessoas marquem um horário na agenda. Ela explora as funcionalidades do Next.js, rotas autenticadas, integração com o Google Calendar, validações, uso do prisma para transações SQL, React Query e muito mais.
+O Ignite Call é uma aplicação de agendamento integrada ao Google Calendar, onde o usuário pode conectar sua conta Google e definir dias e horários disponíveis para que outras pessoas agendem reuniões. O projeto explora recursos do Next.js, rotas autenticadas, integração com APIs, validações de formulário, Prisma para operações no banco de dados, React Query para gerenciamento de estado assíncrono e outras boas práticas do ecossistema React.
 
 <h3>📌 Tecnologias</h3> 
 
